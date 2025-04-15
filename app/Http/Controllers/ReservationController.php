@@ -3,18 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Models\Reservation;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Yajra\DataTables\DataTables;
 
 class ReservationController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $reservations = Reservation::all();
+        if ($request->ajax()) {
+            $data = Reservation::with('user')->select('reservations.*');
+            return DataTables::of($data)
+                ->addColumn('action', function ($row) {
+                    return '<a href="' . route('reservations.show', $row->id) . '" class="btn btn-info btn-sm">View</a>';
+                })->setRowClass('text-center align-middle text-sm text-gray-300 whitespace-nowrap') 
+                ->rawColumns(['action']) 
 
-        return view('reservation', compact('reservations'));
+                ->make(true);
+        }
+
+        return view('reservation');
     }
 
     /**
@@ -54,8 +66,25 @@ class ReservationController extends Controller
      */
     public function update(Request $request, Reservation $reservation)
     {
-        //
+        $validated = $request->validate([
+            'user_id' => 'exists:users, id',
+            'email' => 'required|email',
+            'numero_camion' => 'required|string|max:255',
+            'type_camion' => 'required|in:Plateau,Rideau coulissant',
+            'arrivee_prevue' => 'required|date',
+        ]);
+
+        DB::table('users')->update([
+            'name' => $request->name,
+        ]);
+
+        $reservation->update([
+            $validated['']
+        ]);
+
+        return redirect()->back()->with('success', 'Réservation mise à jour avec succès.');
     }
+
 
     /**
      * Remove the specified resource from storage.

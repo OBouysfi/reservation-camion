@@ -14,7 +14,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('chauffeur');
-            $table->string('numero_camion');
+            $table->strings('numero_camion');
             $table->enum('type_camion', ['Plateau', 'Rideau coulissant']);
             $table->timestamp('arrivee_prevue');
             $table->timestamps();
