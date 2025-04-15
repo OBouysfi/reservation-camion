@@ -18,10 +18,5 @@ class AdminController extends Controller
         return view('dashboard', compact('totalReservations', 'plateauCount', 'rideauCount', 'latestReservations'));
     }
 
-    public function reservation()
-    {
-       
-
-        return view('reservation');
-    }
+   
 }

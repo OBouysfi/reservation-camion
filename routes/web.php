@@ -27,7 +27,7 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-    Route::get('/reservation',[AdminController::class,'reservation'])->name('reservation');
+    Route::resource('/reservations',ReservationController::class);
     Route::get('/reservations/export-excel', [AdminController::class, 'exportExcel'])->name('reservations.excel');
     Route::get('/reservations/export-pdf', [AdminController::class, 'exportPdf'])->name('reservations.pdf');
 });
