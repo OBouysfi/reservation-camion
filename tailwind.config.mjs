@@ -16,7 +16,7 @@ export default {
             },
             colors: {
                 primary: {
-                    DEFAULT: "#6E62E5", 
+                    DEFAULT: "#F97316", 
                   
                 },
             },

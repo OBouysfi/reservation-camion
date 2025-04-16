@@ -13,7 +13,8 @@ class ReservationSeeder extends Seeder
 {
     /**
      * Run the database seeds.
-     */ public function run(): void
+     */
+    public function run(): void
     {
         $users = User::pluck('id');
 
@@ -22,6 +23,7 @@ class ReservationSeeder extends Seeder
                 'user_id' => $users->random(),
                 'chauffeur' => fake()->name(),
                 'numero_camion' => strtoupper(\Illuminate\Support\Str::random(6)),
+                'status' => collect(['En attente', 'Confirmée', 'Annulée'])->random(),
                 'type_camion' => collect(['Plateau', 'Rideau coulissant'])->random(),
                 'arrivee_prevue' => Carbon::now()->addDays(rand(1, 15)),
                 'created_at' => now(),

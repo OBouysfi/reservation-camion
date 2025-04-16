@@ -32,10 +32,18 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/reservations/export-pdf', [AdminController::class, 'exportPdf'])->name('reservations.pdf');
 });
 
+Route::get('/settings', function () {
+    return view('layouts.settings');
+})->middleware(['auth'])->name('settings');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+Route::get('/reservations/export/pdf', [App\Http\Controllers\ReservationController::class, 'exportPdf'])->name('reservations.export.pdf');
+
+// Excel Export Route
+Route::get('/reservations/export/excel', [App\Http\Controllers\ReservationController::class, 'exportExcel'])->name('reservations.export.excel');
 
 require __DIR__ . '/auth.php';

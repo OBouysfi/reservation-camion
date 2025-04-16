@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ReservationsExport;
 use App\Models\Reservation;
 use App\Models\User;
+use Barryvdh\DomPDF\PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\DataTables;
 
 class ReservationController extends Controller
@@ -17,18 +20,39 @@ class ReservationController extends Controller
     {
         if ($request->ajax()) {
             $data = Reservation::with('user')->select('reservations.*');
+
             return DataTables::of($data)
                 ->addColumn('action', function ($row) {
-                    return '<a href="' . route('reservations.show', $row->id) . '" class="btn btn-info btn-sm">View</a>';
-                })->setRowClass('text-center align-middle text-sm text-gray-300 whitespace-nowrap') 
-                ->rawColumns(['action']) 
-
+                    $id = $row->id;
+                    return view('reservation', compact('id'))->render();
+                })
+                ->setRowClass('text-center align-middle text-sm text-black whitespace-nowrap')
+                ->rawColumns(['action'])
                 ->make(true);
         }
 
         return view('reservation');
     }
 
+
+
+    public function exportPdf()
+    {
+        $reservations = Reservation::with('user')->get();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('exports.reservations-pdf', [
+            'reservations' => $reservations,
+            'date' => date('Y-m-d H:i:s')
+        ]);
+
+        return $pdf->download('reservations-' . date('Y-m-d') . '.pdf');
+    }
+
+    
+    public function exportExcel()
+    {
+        return Excel::download(new ReservationsExport, 'reservations-' . date('Y-m-d') . '.xlsx');
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -42,7 +66,20 @@ class ReservationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validate incoming request data
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'chauffeur' => 'required|string|max:255',
+            'numero_camion' => 'required|string|max:255',
+            'type_camion' => 'required|string|in:Plateau,Rideau coulissant',
+            'arrivee_prevue' => 'required|date',
+        ]);
+
+        // Create the reservation
+        Reservation::create($validated);
+
+        // Redirect or return success message
+        return redirect()->back()->with('success', 'Réservation créée avec succès !');
     }
 
     /**
@@ -69,18 +106,13 @@ class ReservationController extends Controller
         $validated = $request->validate([
             'user_id' => 'exists:users, id',
             'email' => 'required|email',
+            'chauffeur' => 'required|string|max:255',
             'numero_camion' => 'required|string|max:255',
             'type_camion' => 'required|in:Plateau,Rideau coulissant',
             'arrivee_prevue' => 'required|date',
         ]);
 
-        DB::table('users')->update([
-            'name' => $request->name,
-        ]);
-
-        $reservation->update([
-            $validated['']
-        ]);
+        $reservation->update($validated);
 
         return redirect()->back()->with('success', 'Réservation mise à jour avec succès.');
     }
@@ -91,6 +123,8 @@ class ReservationController extends Controller
      */
     public function destroy(Reservation $reservation)
     {
-        //
+        $reservation->delete();
+
+        return redirect()->back()->with('success', 'Réservation supprimée avec succès.');
     }
 }
