@@ -6,7 +6,7 @@
         @csrf
 
         <div class="flex justify-center items-center flex-col py-10">
-            <img src="/Logo.png" alt="">
+            <img src="/Logo4.png" alt="" class="size-32">
             <h1 class="text-xl font-bold">Log in to your Account</h1>
             <p class="text-sm font-light text-gray-600">Welcome back, please enter your details.</p>
         </div>

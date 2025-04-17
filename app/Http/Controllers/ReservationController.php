@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ReservationsExport;
+use App\Mail\NotifyAdminOfSubmissionMail;
+use App\Mail\SendUserConfirmationMail;
 use App\Models\Reservation;
 use App\Models\User;
 use Barryvdh\DomPDF\PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
 use Yajra\DataTables\DataTables;
 
@@ -26,6 +29,7 @@ class ReservationController extends Controller
                     $id = $row->id;
                     return view('reservation', compact('id'))->render();
                 })
+                ->addColumn('action',fn($data)=>view('Popup',['user'=>$data])->render())
                 ->setRowClass('text-center align-middle text-sm text-black whitespace-nowrap')
                 ->rawColumns(['action'])
                 ->make(true);
@@ -48,7 +52,7 @@ class ReservationController extends Controller
         return $pdf->download('reservations-' . date('Y-m-d') . '.pdf');
     }
 
-    
+
     public function exportExcel()
     {
         return Excel::download(new ReservationsExport, 'reservations-' . date('Y-m-d') . '.xlsx');
@@ -60,13 +64,50 @@ class ReservationController extends Controller
     {
         //
     }
+    public function resnolog(Request $request)
+    {
+        $validated = $request->validate([
+            'chauffeur' => 'required|string|max:255',
+            'email' => 'required|email',
+            'numero_camion' => 'required|string|max:255',
+            'type_camion' => 'required|string|in:Plateau,Rideau coulissant',
+            'arrivee_prevue' => 'required|date',
+        ]);
+
+
+        $reservation = Reservation::create($validated);
+
+
+
+
+        $data = [
+            'name' => $validated['chauffeur'],
+            'email' => $validated['email'],
+            'message' => 'Votre réservation a été créée avec succès.',
+            'chauffeur' => $validated['chauffeur'],
+            'numero_camion' => $validated['numero_camion'],
+            'type_camion' => $validated['type_camion'],
+            'arrivee_prevue' => $validated['arrivee_prevue'],
+        ];
+
+        
+
+        Mail::to($validated['email'])->send(new SendUserConfirmationMail($data));
+        Mail::to('hia807976@gmail.com')->send(new NotifyAdminOfSubmissionMail($data));
+
+
+        return redirect()->back()->with('success', 'Réservation créée avec succès !');
+    }
 
     /**
      * Store a newly created resource in storage.
      */
+
+
+
     public function store(Request $request)
     {
-        // Validate incoming request data
+
         $validated = $request->validate([
             'user_id' => 'required|exists:users,id',
             'chauffeur' => 'required|string|max:255',
@@ -75,12 +116,30 @@ class ReservationController extends Controller
             'arrivee_prevue' => 'required|date',
         ]);
 
-        // Create the reservation
-        Reservation::create($validated);
 
-        // Redirect or return success message
+        $reservation = Reservation::create($validated);
+
+
+        $user = User::findOrFail($validated['user_id']);
+
+        $data = [
+            'name' => $user->name,
+            'email' => $user->email,
+            'message' => 'Votre réservation a été créée avec succès.',
+            'chauffeur' => $validated['chauffeur'],
+            'numero_camion' => $validated['numero_camion'],
+            'type_camion' => $validated['type_camion'],
+            'arrivee_prevue' => $validated['arrivee_prevue'],
+        ];
+
+
+        Mail::to($user->email)->send(new SendUserConfirmationMail($data));
+        Mail::to('hia807976@gmail.com')->send(new NotifyAdminOfSubmissionMail($data));
+
+
         return redirect()->back()->with('success', 'Réservation créée avec succès !');
     }
+
 
     /**
      * Display the specified resource.

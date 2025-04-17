@@ -16,7 +16,7 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        return view('profile.edit', [
+        return view('settings', [
             'user' => $request->user(),
         ]);
     }
@@ -28,6 +28,10 @@ class ProfileController extends Controller
     {
         $request->user()->fill($request->validated());
 
+        if ($request->hasFile('profile_photo')) {
+            $path = $request->file('profile_photo')->store('profile_photos', 'public');
+            $request->user()->profile_photo = $path;
+        }        
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
         }

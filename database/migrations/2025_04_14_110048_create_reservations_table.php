@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
             $table->string('numero_camion');
             $table->string('chauffeur');
             $table->enum('status', ['En attente', 'Confirmée', 'Annulée'])->default('En attente');

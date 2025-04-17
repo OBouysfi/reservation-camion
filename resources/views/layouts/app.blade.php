@@ -6,10 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('assets/img/apple-icon.png') }}">
     <link rel="icon" type="image/png" href="{{ asset('assets/img/favicon.png') }}">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="{{ asset('app.css') }}" rel="stylesheet">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
+    </style>
     <title>
-        Soft UI Dashboard 3 by Creative Tim
+        Camaway
     </title>
 
     <link href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700,800" rel="stylesheet" />
@@ -43,130 +51,7 @@
 </head>
 
 <body class="g-sidenav-show ">
-    <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 ov"
-        id="sidenav-main" style="height: 100vh; overflow: hidden;">
-        <div style="display: flex; flex-direction: column; justify-content: space-between; height: 96vh;">
-            <div>
-                <div class="sidenav-header">
-                    <i class="fas fa-times  cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
-                        aria-hidden="true" id="iconSidenav"></i>
-                    <a class=" m-0 flex items-center"
-                        href=" https://demos.creative-tim.com/soft-ui-dashboard/pages/dashboard.html " target="_blank">
-                        <img src="{{ asset('Logo4.png') }}" class="navbar-brand-img " alt="main_logo">
-                        <span class=" font-weight-bold">Camaway</span>
-                    </a>
-                </div>
-                <hr class="horizontal dark  mt-0">
-                <div class=" navbar-collapse  w-auto " id="sidenav-collapse-main">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}"
-                                href="{{ route('dashboard') }}">
-                                <div
-                                    class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                                    <svg width="12px" height="12px" xmlns="http://www.w3.org/2000/svg" width="24"
-                                        height="24" viewBox="0 0 24 24"
-                                        style="fill: {{ request()->routeIs('dashboard') ? '#ffff' : 'rgba(0, 0, 0, 1)' }};transform: ;msFilter:;">
-                                        <path
-                                            d="M4 13h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1zm-1 7a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v4zm10 0a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-7a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v7zm1-10h6a1 1 0 0 0 1-1V4a1 1 0 0 0-1-1h-6a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1z">
-                                        </path>
-                                    </svg>
-                                </div>
-                                <span class="nav-link-text ms-1">Tableau de bord</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('reservations.index') ? 'active' : '' }}"
-                                href="{{ route('reservations.index') }}">
-                                <div
-                                    class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                                    <svg width="12px" height="12px" xmlns="http://www.w3.org/2000/svg" width="24"
-                                        height="24" viewBox="0 0 24 24"
-                                        style="fill: {{ request()->routeIs('reservations.index') ? '#ffff' : 'rgba(0, 0, 0, 1)' }};transform: ;msFilter:;">
-                                        <path
-                                            d="M21 20V6c0-1.103-.897-2-2-2h-2V2h-2v2H9V2H7v2H5c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h14c1.103 0 2-.897 2-2zM9 18H7v-2h2v2zm0-4H7v-2h2v2zm4 4h-2v-2h2v2zm0-4h-2v-2h2v2zm4 4h-2v-2h2v2zm0-4h-2v-2h2v2zm2-5H5V7h14v2z">
-                                        </path>
-                                    </svg>
-                                </div>
-                                <span class="nav-link-text ms-1">Réservation</span>
-                            </a>
-                        </li>
-
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('inbox') ? 'active' : '' }}" href="#">
-                                <div
-                                    class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
-                                    <svg width="12px" height="12px" xmlns="http://www.w3.org/2000/svg" width="24"
-                                        height="24" viewBox="0 0 24 24"
-                                        style="fill: {{ request()->routeIs('inbox') ? '#ffff' : 'rgba(0, 0, 0, 1)' }};transform: ;msFilter:;">
-                                        <path
-                                            d="M20 3H4c-1.103 0-2 .897-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V5c0-1.103-.897-2-2-2zm-1 9h-3.142c-.446 1.722-1.997 3-3.858 3s-3.412-1.278-3.858-3H4V5h16v7h-1z">
-                                        </path>
-                                    </svg>
-                                </div>
-                                <span class="nav-link-text ms-1">Boîte de réception</span>
-                            </a>
-                        </li>
-
-
-
-                    </ul>
-                </div>
-            </div>
-            {{-- footer --}}
-            <div style="margin: 10px;">
-                <div style="display: flex; align-items: center; justify-content: space-between;" class="space-x-2">
-                    <!-- Profile information -->
-                    <div style="display: flex; align-items: center;" class="space-x-2">
-                        <img src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?q=80&w=2080&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                            alt="Profile" class="size-10 rounded-full" />
-                        <div class="profile-text" style="line-height: 10px">
-                            <p class="profile-name" style="margin-bottom: 0;font-size:12px; font-weight: 600;">{{auth()->user()->name}}</p>
-                            <span class="profile-role" style="font-size: 10px;">Admin</span>
-                        </div>
-                    </div>
-
-                    <!-- Dropdown menu -->
-                    <div class="dropdown">
-                        <button class="btn dropdown-toggle p-0 rounded-full hover:bg-gray-100 w-8 h-8 flex items-center justify-center transition-all duration-200" 
-                            type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-ellipsis-v text-gray-600"></i>
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end right-37 -translate-y-37   border-0 rounded-xl min-w-full bg-white"
-                            aria-labelledby="profileDropdown">
-                            <li>
-                                <a class="dropdown-item {{ request()->routeIs('settings') ? 'active bg-primary-50 text-primary' : 'text-gray-700' }} hover:bg-gray-50 px-4 py-2.5 transition-all duration-200"
-                                    href="">
-                                    <div class="flex items-center">
-                                        <div class="rounded-md  mr-1 flex items-center justify-center">
-                                            <i class='bx bxs-cog text-black text-md'></i>
-                                        </div>
-                                        <span class="font-medium text-xs text-black">Parametres</span>
-                                    </div>
-                                </a>
-                            </li>
-                            <li>
-                                <hr class="dropdown-divider my-2 border-gray-100">
-                            </li>
-                            <li>
-                                <a class="dropdown-item {{ request()->routeIs('logout') ? 'active bg-primary-50 text-primary' : 'text-gray-700' }} hover:bg-gray-50 hover:text-rose-600 px-4 py-2.5 transition-all duration-200"
-                                    href="{{ route('logout') ?? '../pages/profile.html' }}">
-                                    <div class="flex items-center">
-                                        <div class="rounded-md mr-1 flex items-center justify-center">
-                                            <i class='bx bx-log-out text-black text-md'></i>
-                                        </div>
-                                        <span class="font-medium text-xs">Se deconnecter</span>
-                                    </div>
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="w-full h-[0.5px] bg-gray-300 my-3"></div>
-            </div>
-        </div>
-    </aside>
+    <x-sidebar />
     @yield('content')
 
     <!--   Core JS Files   -->
@@ -175,6 +60,8 @@
     <script src="{{ asset('assets/js/plugins/perfect-scrollbar.min.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/smooth-scrollbar.min.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/chartjs.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
     <script>
         var ctx = document.getElementById("chart-bars").getContext("2d");
 
@@ -274,7 +161,7 @@
                         maxBarThickness: 6
 
                     },
-                    
+
                 ],
             },
             options: {
@@ -343,9 +230,12 @@
             Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
         }
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    
     <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq" crossorigin="anonymous">
+    </script>
     <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
     <script src="{{ asset('assets/js/soft-ui-dashboard.min.js?v=1.1.0') }}"></script>
 </body>

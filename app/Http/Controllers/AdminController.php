@@ -18,5 +18,11 @@ class AdminController extends Controller
         return view('dashboard', compact('totalReservations', 'plateauCount', 'rideauCount', 'latestReservations'));
     }
 
-   
+    public function settings()
+    {
+        $authUser = auth()->user();
+        return view('settings', compact('authUser'));
+    }
+
+
 }

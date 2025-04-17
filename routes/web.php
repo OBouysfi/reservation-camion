@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
+
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\AdminController;
-
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,23 +27,25 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-    Route::resource('/reservations',ReservationController::class);
+    Route::resource('/reservations', ReservationController::class);
     Route::get('/reservations/export-excel', [AdminController::class, 'exportExcel'])->name('reservations.excel');
     Route::get('/reservations/export-pdf', [AdminController::class, 'exportPdf'])->name('reservations.pdf');
+    Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
 });
 
-Route::get('/settings', function () {
-    return view('layouts.settings');
-})->middleware(['auth'])->name('settings');
+
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('admin/settings', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 Route::get('/reservations/export/pdf', [App\Http\Controllers\ReservationController::class, 'exportPdf'])->name('reservations.export.pdf');
 
-// Excel Export Route
+Route::post('/reservations', [App\Http\Controllers\ReservationController::class, 'resnolog'])->name('reservations.reslog');
+
 Route::get('/reservations/export/excel', [App\Http\Controllers\ReservationController::class, 'exportExcel'])->name('reservations.export.excel');
+
+
 
 require __DIR__ . '/auth.php';

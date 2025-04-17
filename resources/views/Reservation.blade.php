@@ -1,62 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
-    <div id="newReservationModal" class="fixed inset-0  bg-opacity-40 hidden items-center justify-center z-50 transition-all">
-        <div class="bg-white rounded-xl w-full max-w-2xl shadow-xl overflow-hidden">
-
-
-            <div class="flex justify-between items-center px-6 py-4 ">
-                <h2 class="text-xl font-semibold text-gray-800">Nouvelle Réservation</h2>
-                <button onclick="closeModal('newReservationModal')"
-                    class="text-2xl text-gray-400 hover:text-black">&times;</button>
-            </div>
-
-
-            <div class="p-6">
-                <form id="newReservationForm" class="grid grid-cols-1 md:grid-cols-2 gap-4" method="POST"
-                    action="{{ route('reservations.store') }}">
-                    @csrf
-
-                    <input type="hidden" name="user_id" value="{{ auth()->id() }}">
+    <!-- NEW RESERVATION MODAL (Bootstrap Only) -->
 
 
 
-                    <div class="col-span-2">
-                        <label class="block text-sm font-medium mb-1">Chauffeur</label>
-                        <input type="text" name="chauffeur" class="input input-bordered w-full" required>
-                    </div>
-                    <div class="col-span-2">
-                        <label class="block text-sm font-medium mb-1">Numéro de Camion</label>
-                        <input type="text" name="numero_camion" class="input input-bordered w-full" required>
-                    </div>
+    {{-- ---------------------------------------------------------------------------------------------------------- --}}
 
 
-
-                    <div class="col-span-2 md:col-span-1">
-                        <label class="block text-sm font-medium mb-1">Type de Camion</label>
-                        <select name="type_camion" class="select select-bordered w-full" required>
-                            <option value="Plateau">Plateau</option>
-                            <option value="Rideau coulissant">Rideau coulissant</option>
-                        </select>
-                    </div>
-
-                    <div class="col-span-2 md:col-span-1">
-                        <label class="block text-sm font-medium mb-1">Arrivée Prévue</label>
-                        <input type="datetime-local" name="arrivee_prevue" class="input input-bordered w-full" required>
-                    </div>
-                </form>
-            </div>
-
-            <div class="flex justify-end items-center px-6 py-4 space-x-2">
-                <button onclick="closeModal('newReservationModal')" class="btn btn-ghost">Annuler</button>
-                <button form="newReservationForm" class="btn btn-primary">Enregistrer</button>
-            </div>
-        </div>
-    </div>
-
-
-
-
+    {{-- ----------------------------------------------------------------------------------------------------------- --}}
 
     <body class="g-sidenav-show bg-gray-100">
         <style>
@@ -83,6 +35,10 @@
                 color: #000 !important;
                 padding-top: 30px !important;
                 padding-bottom: 30px !important;
+            }
+
+            [x-cloak] {
+                display: none !important;
             }
         </style>
         <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg bg-gray-50">
@@ -130,14 +86,11 @@
                                     </div>
                                     <div class="col-md-3">
                                         <div class="d-flex gap-2 mt-3">
-                       
                                             <a href="{{ route('reservations.export.pdf') }}"
                                                 class="btn btn-danger shadow-sm d-flex align-items-center gap-2">
                                                 <i class="bx bxs-file-pdf fs-5"></i>
                                                 <span>PDF</span>
                                             </a>
-
-                                      
                                             <a href="{{ route('reservations.export.excel') }}"
                                                 class="btn btn-success shadow-sm d-flex align-items-center gap-2">
                                                 <i class="bx bxs-file-export fs-5"></i>
@@ -145,29 +98,92 @@
                                             </a>
                                         </div>
                                     </div>
-                                    <div class="col-md-2 text-end">
-                                        <button class="btn btn-primary" onclick="openModal('newReservationModal')">
-                                        + Nouvelle Réservation
-                                        </button>
-                                        <div class="modal fade" id="newReservationModal" tabindex="-1">
-                                            <div class="modal-dialog modal-lg">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title">Nouvelle Réservation</h5>
-                                                        <button type="button" class="btn-close"
-                                                            data-bs-dismiss="modal"></button>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
+
                             </div>
+
                         </div>
                     </div>
                 </div>
 
+                <div x-data="{ showModal: false }" class="z-50" style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+                    <button @click="showModal = true" class="bg-primary text-sm  text-white px-4 py-2 rounded ">
+                        Nouvelle reservation
+                    </button>
+                    <div x-cloak x-show="showModal" x-transition
+                        class="fixed inset-0 flex items-center justify-center backdrop:blur-lg bg-opacity-50 z-50"
+                        style="display: none;" @keydown.escape.window="showModal = false" @click.self="showModal = false">
+
+                        <div class="bg-white rounded-lg w-full max-w-[800px] p-6">
+                            <div class="flex justify-between items-center mb-4">
+                                <h2 class="text-xl font-bold">Nouvelle reservations</h2>
+                                <button @click="showModal = false"
+                                    class="text-2xl text-gray-600 hover:text-red-500">&times;</button>
+                            </div>
+                            <p class="text-gray-600 mb-4">Remplissez le formulaire ci-dessous pour
+                                créer une nouvelle réservation.</p>
+                            <form class="" method="POST" action="{{ route('reservations.store') }}">
+                                @csrf
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                                    <div class="col-span-2">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Chauffeur</label>
+                                        <input type="text" name="chauffeur"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
+                                            required>
+                                    </div>
+                                    <div class="col-span-2">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                        <input type="email" name="email"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
+                                            required>
+                                    </div>
+
+                                    <div class="col-span-2">
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Numéro
+                                            de Camion</label>
+                                        <input type="text" name="numero_camion"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
+                                            required>
+                                    </div>
+
+
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Type
+                                            de Camion</label>
+                                        <select name="type_camion"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
+                                            required>
+                                            <option value="">Sélectionnez un type</option>
+                                            <option value="Plateau">Plateau</option>
+                                            <option value="Rideau coulissant">Rideau coulissant</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">Arrivée
+                                            Prévue</label>
+                                        <input type="datetime-local" name="arrivee_prevue"
+                                            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
+                                            required>
+                                    </div>
+                                </div>
+                                <div class="flex justify-end space-x-3 pt-6 border-t border-gray-200 mt-6">
+                                    <a href="{{ route('reservations.index') }}"
+                                        class="px-6 py-2 border border-orange-500 text-orange-500 rounded-lg hover:bg-orange-50 transition font-medium">
+                                        Annuler
+                                    </a>
+                                    <button type="submit"
+                                        class="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition font-medium">
+                                        Enregistrer
+                                    </button>
+                                </div>
+                            </form>
+
+
+
+                        </div>
+                    </div>
+                </div>
                 <!-- Table Section -->
                 <div class="row">
                     <div class="col-12">
@@ -215,13 +231,16 @@
                                 </div>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
+
+
         </main>
 
         <!-- Core JS Files -->
-        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
         <script src="../assets/js/core/popper.min.js"></script>
         <script src="../assets/js/core/bootstrap.min.js"></script>
         <script src="../assets/js/plugins/perfect-scrollbar.min.js"></script>
@@ -246,7 +265,7 @@
         <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
         <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
         <script>
-            $(function() {
+            $(document).ready(function() {
                 let datatable = $('#tableReservation').DataTable({
                     processing: true,
                     serverSide: true,
@@ -279,7 +298,7 @@
                             data: 'status',
                             name: 'status',
                             render: function(data, type, row) {
-                                return `<span class="badge badge-xl bg-gradient-${data == 'Confirmée' ? 'success' : data == 'En attente' ? 'warning' : 'danger'}">${data}</span>`;
+                                return `<span class="p-2 rounded-lg text-white font-semibold bg-${data == 'Confirmée' ? 'green-400' : data == 'En attente' ? 'yellow-400' : 'red-400'}">${data}</span>`;
                             }
                         },
                         {
@@ -291,15 +310,15 @@
                             render: function(data, type, row) {
                                 return `
 <div class="d-flex justify-content-center">
-    <button  class="btn btn-link text-dark px-2 mb-0" title="Voir"  onclick="openModal('newReservationModal')"">
-        <i class="bx bx-show fs-5"></i>
-    </button>
-    <button class="btn btn-link text-primary px-2 mb-0" title="Modifier" onclick="openModal('newReservationModal')">
+    
+   
+    <button class="btn btn-link text-primary px-2 mb-0" title="Modifier" onclick="openModal('updateReservationModal')">
         <i class="bx bx-pencil fs-5"></i>
     </button>
-     <button class="btn btn-link text-danger px-2 mb-0" title="Supprimer" onclick="confirmDelete(${row.id})">
+    <button class="btn btn-link text-danger px-2 mb-0" title="Supprimer" onclick="confirmDelete(${row.id})">
         <i class="bx bx-trash fs-5"></i>
     </button>
+     
 </div>`;
                             }
 
@@ -315,14 +334,14 @@
         <script>
             function showViewModal(id) {
                 $.get(`/reservations/${id}`, function(data) {
-                    $('#viewReservationContent').html(data); // Blade partial or JSON display
+                    $('#viewReservationContent').html(data);
                     $('#viewReservationModal').modal('show');
                 });
             }
 
             function showEditModal(id) {
                 $.get(`/reservations/${id}/edit`, function(formHtml) {
-                    $('#editReservationContent').html(formHtml); // Blade form partial
+                    $('#editReservationContent').html(formHtml);
                     $('#editReservationModal').modal('show');
                 });
             }
@@ -344,6 +363,8 @@
                 document.getElementById(id).classList.remove('flex');
             }
         </script>
+
+
         <script>
             function confirmDelete(id) {
                 Swal.fire({
