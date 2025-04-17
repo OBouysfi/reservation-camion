@@ -188,7 +188,11 @@
                                                     USER_ID</th>
                                                 <th
                                                     class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                    Email</th>
+                                                <th
+                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                     Chauffeur</th>
+
                                                 <th
                                                     class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                     Numéro Camion</th>
@@ -291,6 +295,11 @@
                             title: 'Reference',
                         },
                         {
+                            data: 'email',
+                            name: 'email',
+
+                        },
+                        {
                             data: 'chauffeur',
                             name: 'chauffeur'
                         },
@@ -388,33 +397,50 @@
                     const newStatus = $(this).val();
                     const $dropdown = $(this);
 
-                    $.ajax({
-                        url: "{{ route('reservations.updateStatus', '') }}/" + reservationId,// Fixed URL format
-                        type: 'PUT',
-                        data: {
-                            status: newStatus,
-                            _token: '{{ csrf_token() }}'
-                        },
-                        success: function() {
-                            // Define the colors again
-                            const bgClassMap = {
-                                'Confirmée': 'green-400',
-                                'En attente': 'yellow-400',
-                                'Annulée': 'red-400'
-                            };
+                    // Show SweetAlert confirmation
+                    Swal.fire({
+                            title: 'Êtes‑vous sûr ?',
+                            text: `Voulez‑vous changer le statut en ${newStatus} ?`,
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Oui, changer',
+                            cancelButtonText: 'Annuler'
+                        })
+                        .then((result) => {
+                            if (result.isConfirmed) {
+                                $.ajax({
+                                    url: "{{ route('reservations.updateStatus', '') }}/" +
+                                        reservationId, // Fixed URL format
+                                    type: 'PUT',
+                                    data: {
+                                        status: newStatus,
+                                        _token: '{{ csrf_token() }}'
+                                    },
+                                    success: function() {
+                                        // Define the colors again
+                                        const bgClassMap = {
+                                            'Confirmée': 'green-400',
+                                            'En attente': 'yellow-400',
+                                            'Annulée': 'red-400'
+                                        };
 
-                            // Remove old bg classes
-                            $dropdown.removeClass('bg-green-400 bg-yellow-400 bg-red-400');
+                                        // Remove old bg classes
+                                        $dropdown.removeClass(
+                                            'bg-green-400 bg-yellow-400 bg-red-400');
 
-                            // Add the new one
-                            $dropdown.addClass(
-                            `bg-${bgClassMap[newStatus]}`); // Fixed string template
-                        },
-                        error: function() {
-                            alert('Failed to update status');
-                        }
-                    });
+                                        // Add the new one
+                                        $dropdown.addClass(
+                                            `bg-${bgClassMap[newStatus]}`
+                                        ); // Fixed string template
+                                    },
+                                    error: function() {
+                                        alert('Failed to update status');
+                                    }
+                                });
+                            }
+                        });
                 });
+
 
                 $('#customSearchBox').on('input', function() {
                     table.search(this.value).draw();
@@ -486,5 +512,7 @@
                 });
             }
         </script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     </body>
 @endsection

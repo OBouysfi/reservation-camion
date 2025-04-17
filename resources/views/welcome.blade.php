@@ -426,21 +426,18 @@
                     updateCarousel(currentIndex);
                 }, 2000);
 
-                // SweetAlert implementation for the reservation form
                 const reservationForm = document.getElementById('reservationForm');
 
                 if (reservationForm) {
                     reservationForm.addEventListener('submit', function(e) {
                         e.preventDefault();
 
-                        // Validate form fields
                         const isValid = this.checkValidity();
                         if (!isValid) {
                             this.reportValidity();
                             return;
                         }
 
-                        // Show SweetAlert loading state
                         Swal.fire({
                             title: 'Traitement en cours...',
                             text: 'Nous enregistrons votre réservation',
@@ -453,7 +450,7 @@
                             }
                         });
 
-                        // Submit the form
+
                         const formData = new FormData(this);
 
                         fetch(this.getAttribute('action'), {

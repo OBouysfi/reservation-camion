@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Exports\ReservationsExport;
 use App\Mail\NotifyAdminOfSubmissionMail;
+use App\Mail\ReservationConfirmedMail;
 use App\Mail\SendUserConfirmationMail;
 use App\Models\Reservation;
 use App\Models\User;
@@ -11,7 +12,9 @@ use Barryvdh\DomPDF\PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Log;
 use Maatwebsite\Excel\Facades\Excel;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Yajra\DataTables\DataTables;
 
 class ReservationController extends Controller
@@ -43,13 +46,42 @@ class ReservationController extends Controller
 
         return view('reservation');
     }
+
     public function updateStatus(Request $request, $id)
     {
         $reservation = Reservation::findOrFail($id);
         $reservation->status = $request->status;
         $reservation->save();
 
-        return response()->json(['message' => 'Status updated successfully']);
+        // Only send email if status is "Confirmée" and we actually have an email
+        if ($reservation->status === 'Confirmée' && $reservation->email) {
+            try {
+                Mail::to($reservation->email)
+                    ->send(new ReservationConfirmedMail($reservation));
+
+                // Optionally, for Laravel ≤8 you could check:
+                // if (! empty(Mail::failures())) { throw new \Exception('Mail failures: '.implode(',', Mail::failures())); }
+
+            } catch (TransportExceptionInterface $e) {
+                // This catches any low‑level transport error (SMTP down, auth failed, etc)
+                Log::error("Reservation #{$reservation->id} mail send failed: " . $e->getMessage());
+
+                return response()->json([
+                    'message' => 'Status updated, but email sending failed.',
+                    'error' => $e->getMessage(),
+                ], 500);
+            } catch (\Exception $e) {
+                // Catch any other errors (template errors, queue failures, etc)
+                Log::error("Reservation #{$reservation->id} mail error: " . $e->getMessage());
+
+                return response()->json([
+                    'message' => 'Status updated, but email sending encountered an error.',
+                    'error' => $e->getMessage(),
+                ], 500);
+            }
+        }
+
+        return response()->json(['message' => 'Status updated successfully'], 200);
     }
 
 
@@ -90,7 +122,13 @@ class ReservationController extends Controller
         ]);
 
 
-        $reservation = Reservation::create($validated);
+        Reservation::create([
+            'email' => $validated['email'],
+            'chauffeur' => $validated['chauffeur'],
+            'numero_camion' => $validated['numero_camion'],
+            'type_camion' => $validated['type_camion'],
+            'arrivee_prevue' => $validated['arrivee_prevue'],
+        ]);
 
 
 
@@ -105,6 +143,8 @@ class ReservationController extends Controller
             'arrivee_prevue' => $validated['arrivee_prevue'],
         ];
 
+        // Log::info('Data to be sent: ', $data);
+        // Log::info('Email to be sent: ', $validated['email']);
 
 
         Mail::to($validated['email'])->send(new SendUserConfirmationMail($data));
@@ -116,6 +156,7 @@ class ReservationController extends Controller
                 'message' => 'Réservation créée avec succès.',
             ]);
         }
+
         return redirect()->back()->with('success', 'Réservation créée avec succès!');
     }
 
