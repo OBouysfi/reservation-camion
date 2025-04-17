@@ -49,4 +49,5 @@ Route::get('/reservations/export/excel', [App\Http\Controllers\ReservationContro
 Route::post('/export-selected-pdf', [App\Http\Controllers\ReservationController::class, 'exportSelectedPdf'])
     ->name('reservations.export.selected.pdf');
 
+Route::put('reservations/update-status/{id}', [ReservationController::class, 'updateStatus'])->name('reservations.updateStatus');
 require __DIR__ . '/auth.php';

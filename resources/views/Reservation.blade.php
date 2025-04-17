@@ -89,7 +89,7 @@
                                             <button id="export-selected-pdf"
                                                 class="btn btn-warning shadow-sm d-flex align-items-center gap-2">
                                                 <i class="bx bxs-file-pdf fs-5"></i>
-                                                <span>Export Selected</span>
+                                                <span>exporter la sélection</span>
                                             </button>
                                         </div>
                                     </div>
@@ -182,9 +182,7 @@
                                         <thead>
                                             <tr>
                                                 <th><input type="checkbox" id="select-all"></th> {{-- Master checkbox --}}
-                                                <th
-                                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
-                                                    #ID</th>
+
                                                 <th
                                                     class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                                                     USER_ID</th>
@@ -288,12 +286,9 @@
                             defaultContent: ''
                         }, // Checkbox column
                         {
-                            data: 'id',
-                            name: 'id'
-                        },
-                        {
                             data: 'user_id',
-                            name: 'user_id'
+                            name: 'user_id',
+                            title: 'Reference',
                         },
                         {
                             data: 'chauffeur',
@@ -328,9 +323,9 @@
                                 }).join('');
 
                                 return `
-                                <select class="status-dropdown bg-${bgClass[data]} text-white font-semibold p-1 rounded" data-id="${row.id}" style="padding: 7px !important; border-radius: 5px; border: none;">
-                                    ${optionTags}
-                                </select>`;
+                    <select class="status-dropdown bg-${bgClass[data]} text-white font-semibold p-1 rounded" data-id="${row.id}" style="padding: 7px !important; border-radius: 5px; border: none;">
+                        ${optionTags}
+                    </select>`;
                             }
                         },
                         {
@@ -340,24 +335,23 @@
                             searchable: false,
                             render: function(data, type, row) {
                                 return `
-                                <div class="d-flex justify-content-center">
-
-                                    <button class="btn btn-link text-primary px-2 mb-0"
-                                            title="Modifier"
-                                            onclick="openModal('updateReservationModal')">
-                                        <i class="bx bx-pencil fs-5"></i>
-                                    </button>
-                                    <button class="btn btn-link text-primary px-2 mb-0"
-                                            title="Supprimer"
-                                            onclick="confirmDelete(${row.id})">
-                                        <i class="bx bx-trash fs-5"></i>
-                                    </button>
-                                    <button class="btn btn-link text-primary px-2 mb-0"
-                                            title="details"
-                                            onclick="openModal('updateReservationModal')">
-                                    <i class='bx bx-dots-horizontal-rounded fs-5' ></i>
-                                    </button>
-                                </div>`;
+                    <div class="d-flex justify-content-center">
+                        <button class="btn btn-link text-primary px-2 mb-0"
+                                title="Modifier"
+                                onclick="openModal('updateReservationModal')">
+                            <i class="bx bx-pencil fs-5"></i>
+                        </button>
+                        <button class="btn btn-link text-primary px-2 mb-0"
+                                title="Supprimer"
+                                onclick="confirmDelete(${row.id})">
+                            <i class="bx bx-trash fs-5"></i>
+                        </button>
+                        <button class="btn btn-link text-primary px-2 mb-0"
+                                title="details"
+                                onclick="openModal('updateReservationModal')">
+                            <i class='bx bx-dots-horizontal-rounded fs-5'></i>
+                        </button>
+                    </div>`;
                             }
                         }
                     ]
@@ -389,14 +383,13 @@
                     table.ajax.reload();
                 });
 
-                // Status dropdown change handler
                 $('#tableReservation').on('change', '.status-dropdown', function() {
                     const reservationId = $(this).data('id');
                     const newStatus = $(this).val();
                     const $dropdown = $(this);
 
                     $.ajax({
-                        url: `/reservations/${reservationId}/status`,
+                        url: "{{ route('reservations.updateStatus', '') }}/" + reservationId,// Fixed URL format
                         type: 'PUT',
                         data: {
                             status: newStatus,
@@ -413,8 +406,9 @@
                             // Remove old bg classes
                             $dropdown.removeClass('bg-green-400 bg-yellow-400 bg-red-400');
 
-
-                            $dropdown.addClass(`bg-${bgClassMap[newStatus]}`);
+                            // Add the new one
+                            $dropdown.addClass(
+                            `bg-${bgClassMap[newStatus]}`); // Fixed string template
                         },
                         error: function() {
                             alert('Failed to update status');
@@ -422,15 +416,12 @@
                     });
                 });
 
-
                 $('#customSearchBox').on('input', function() {
                     table.search(this.value).draw();
                 });
 
-
                 $('#export-selected-pdf').on('click', function() {
                     const selectedIds = [];
-
 
                     $('.reservation-checkbox:checked').each(function() {
                         selectedIds.push($(this).val());
@@ -444,11 +435,9 @@
                     const form = $('<form action="/export-selected-pdf" method="POST"></form>');
                     form.append('<input type="hidden" name="_token" value="{{ csrf_token() }}">');
 
-
                     selectedIds.forEach(function(id) {
                         form.append('<input type="hidden" name="ids[]" value="' + id + '">');
                     });
-
 
                     $('body').append(form);
                     form.submit();

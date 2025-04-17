@@ -11,6 +11,9 @@
     <!-- Toastify JS -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
+    <!-- SweetAlert2 - Add this -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     @vite('resources/css/app.css') <!-- Tailwind -->
 </head>
 <style>
@@ -220,7 +223,6 @@
         <div class="auth-buttons">
             @if (!Auth::check())
                 <a href="{{ route('login') }}" class="btn btn-outline">Se connecter</a>
-                <a href="{{ route('register') }}" class="btn btn-solid">S'inscrire</a>
             @else
                 <a href="{{ route('dashboard') }}" class="btn btn-solid">Dashboard</a>
             @endif
@@ -267,7 +269,7 @@
                 <p class="text-sm text-gray-500 mt-1">Veuillez remplir tous les champs requis ci-dessous.</p>
             </div>
 
-            <form class="p-6 space-y-6" method="POST" action="{{ route('reservations.reslog') }}">
+            <form id="reservationForm" class="p-6 space-y-6" method="POST" action="{{ route('reservations.reslog') }}">
                 @csrf
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -315,7 +317,7 @@
                         class="px-6 py-2 border border-orange-500 text-orange-500 rounded-lg hover:bg-orange-50 transition font-medium">
                         Annuler
                     </a>
-                    <button type="submit"
+                    <button type="submit" id="submitBtn"
                         class="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition font-medium">
                         Enregistrer
                     </button>
@@ -423,6 +425,79 @@
                     currentIndex = (currentIndex + 1) % items.length;
                     updateCarousel(currentIndex);
                 }, 2000);
+
+                // SweetAlert implementation for the reservation form
+                const reservationForm = document.getElementById('reservationForm');
+
+                if (reservationForm) {
+                    reservationForm.addEventListener('submit', function(e) {
+                        e.preventDefault();
+
+                        // Validate form fields
+                        const isValid = this.checkValidity();
+                        if (!isValid) {
+                            this.reportValidity();
+                            return;
+                        }
+
+                        // Show SweetAlert loading state
+                        Swal.fire({
+                            title: 'Traitement en cours...',
+                            text: 'Nous enregistrons votre réservation',
+                            icon: 'info',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
+                            showConfirmButton: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        // Submit the form
+                        const formData = new FormData(this);
+
+                        fetch(this.getAttribute('action'), {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                }
+                            })
+                            .then(response => {
+                                if (!response.ok) throw new Error('Network response was not ok');
+                                return response.json();
+                            })
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire({
+                                        title: 'Réservation Confirmée!',
+                                        text: 'Votre réservation a été enregistrée avec succès.',
+                                        icon: 'success',
+                                        confirmButtonText: 'Excellent!',
+                                        confirmButtonColor: '#FF6B35'
+                                    })
+                                } else {
+                                    Swal.fire({
+                                        title: 'Erreur!',
+                                        text: data.message ||
+                                            'Une erreur est survenue lors de l\'enregistrement de votre réservation.',
+                                        icon: 'error',
+                                        confirmButtonText: 'Réessayer',
+                                        confirmButtonColor: '#FF6B35'
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                Swal.fire({
+                                    title: 'Erreur!',
+                                    text: 'Une erreur est survenue lors de la communication avec le serveur.',
+                                    icon: 'error',
+                                    confirmButtonText: 'Réessayer',
+                                    confirmButtonColor: '#FF6B35'
+                                });
+                            });
+                    });
+                }
             });
         </script>
 </body>

@@ -110,7 +110,12 @@ class ReservationController extends Controller
         Mail::to($validated['email'])->send(new SendUserConfirmationMail($data));
         Mail::to('hia807976@gmail.com')->send(new NotifyAdminOfSubmissionMail($data));
 
-
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Réservation créée avec succès.',
+            ]);
+        }
         return redirect()->back()->with('success', 'Réservation créée avec succès!');
     }
 
@@ -150,7 +155,12 @@ class ReservationController extends Controller
 
         Mail::to($user->email)->send(new SendUserConfirmationMail($data));
         Mail::to('hia807976@gmail.com')->send(new NotifyAdminOfSubmissionMail($data));
-
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Réservation créée avec succès.'
+            ]);
+        }
 
         return redirect()->back()->with('success', 'Réservation créée avec succès !');
     }

@@ -49,9 +49,9 @@
             </x-primary-button>
         </div>
 
-        <div class="flex justify-center mt-6 mb-14">
+        {{-- <div class="flex justify-center mt-6 mb-14">
             <p>Don’t have an account?<a href="/register" class="font-semibold text-primary">Sign In</a></p>
-        </div>
+        </div> --}}
 
     </form>
 </x-guest-layout>
