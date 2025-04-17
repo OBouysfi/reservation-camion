@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Reservation;
-
+use App\Models\User;
 class AdminController extends Controller
 {
 
@@ -14,6 +14,7 @@ class AdminController extends Controller
         $plateauCount = Reservation::where('type_camion', 'Plateau')->count();
         $rideauCount = Reservation::where('type_camion', 'Rideau coulissant')->count();
         $latestReservations = Reservation::latest()->take(10)->get();
+        $totalUsers = User::count();
 
         return view('dashboard', compact('totalReservations', 'plateauCount', 'rideauCount', 'latestReservations'));
     }
@@ -24,5 +25,23 @@ class AdminController extends Controller
         return view('settings', compact('authUser'));
     }
 
-
+    public function stats()
+    {
+        $totalReservations = Reservation::count();
+        
+        return view('dashboard', [
+            'totalReservations' => $totalReservations
+        ]);
+    }
+    public function admins()
+    {
+        $totalReservations = Reservation::count();
+        $totalUsers = User::count();
+        
+        return view('dashboard', [
+            'totalReservations' => $totalReservations,
+            'totalUsers' => $totalUsers
+        ]);
+    }
+    
 }
