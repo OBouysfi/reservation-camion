@@ -1,15 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-    <!-- NEW RESERVATION MODAL (Bootstrap Only) -->
-
-
-
-    {{-- ---------------------------------------------------------------------------------------------------------- --}}
-
-
-    {{-- ----------------------------------------------------------------------------------------------------------- --}}
-
     <body class="g-sidenav-show bg-gray-100">
         <style>
             .dataTables_wrapper .dataTables_filter {
@@ -20,9 +11,8 @@
                 display: none;
             }
 
-            .dataTables_wrapper #tableReservation_paginate {
-                display: none;
-
+            .dataTables_wrapper #tableReservation_paginate .paginate_button.current {
+                border-radius: 10px
             }
 
             thead th {
@@ -52,7 +42,6 @@
                             </li>
                             <li class="breadcrumb-item text-sm text-dark active" aria-current="page">reservations</li>
                         </ol>
-
                     </nav>
                 </div>
             </nav>
@@ -74,17 +63,17 @@
                                         </div>
                                     </div>
                                     <div class="col-md-2">
-                                        <select class="form-select">
+                                        <select id="statusFilter" class="form-select">
                                             <option value="">Tous les statuts</option>
-                                            <option value="confirmed">Confirmée</option>
-                                            <option value="pending">En Attente</option>
-                                            <option value="cancelled">Annulée</option>
+                                            <option value="Confirmée">Confirmée</option>
+                                            <option value="En attente">En attente</option>
+                                            <option value="Annulée">Annulée</option>
                                         </select>
                                     </div>
                                     <div class="col-md-2">
-                                        <input type="date" class="form-control">
+                                        <input type="datetime-local" name="arrivee_prevue" class="form-control">
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-5">
                                         <div class="d-flex gap-2 mt-3">
                                             <a href="{{ route('reservations.export.pdf') }}"
                                                 class="btn btn-danger shadow-sm d-flex align-items-center gap-2">
@@ -96,18 +85,21 @@
                                                 <i class="bx bxs-file-export fs-5"></i>
                                                 <span>Excel</span>
                                             </a>
+                                            <button id="export-selected-pdf" class="btn btn-warning shadow-sm d-flex align-items-center gap-2">
+                                                <i class="bx bxs-file-pdf fs-5"></i>
+                                                <span>Export Selected</span>
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
-
                         </div>
                     </div>
                 </div>
 
-                <div x-data="{ showModal: false }" class="z-50" style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
-                    <button @click="showModal = true" class="bg-primary text-sm  text-white px-4 py-2 rounded ">
+                <div x-data="{ showModal: false }" class="z-50"
+                    style="display: flex; justify-content: flex-end; margin-bottom: 10px;">
+                    <button @click="showModal = true" class="bg-primary text-sm text-white px-4 py-2 rounded">
                         Nouvelle reservation
                     </button>
                     <div x-cloak x-show="showModal" x-transition
@@ -125,7 +117,7 @@
                             <form class="" method="POST" action="{{ route('reservations.store') }}">
                                 @csrf
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
+                                    <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
                                     <div class="col-span-2">
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Chauffeur</label>
                                         <input type="text" name="chauffeur"
@@ -138,7 +130,6 @@
                                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
                                             required>
                                     </div>
-
                                     <div class="col-span-2">
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Numéro
                                             de Camion</label>
@@ -146,8 +137,6 @@
                                             class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition"
                                             required>
                                     </div>
-
-
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-2">Type
                                             de Camion</label>
@@ -168,19 +157,12 @@
                                     </div>
                                 </div>
                                 <div class="flex justify-end space-x-3 pt-6 border-t border-gray-200 mt-6">
-                                    <a href="{{ route('reservations.index') }}"
-                                        class="px-6 py-2 border border-orange-500 text-orange-500 rounded-lg hover:bg-orange-50 transition font-medium">
-                                        Annuler
-                                    </a>
                                     <button type="submit"
                                         class="px-6 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition font-medium">
                                         Enregistrer
                                     </button>
                                 </div>
                             </form>
-
-
-
                         </div>
                     </div>
                 </div>
@@ -194,53 +176,40 @@
                         <div class="card mb-4">
                             <div class="card-body px-0 pt-0 pb-2">
                                 <div class="table-responsive p-0">
-
                                     <table class="table align-items-center mb-0" id="tableReservation">
                                         <thead>
                                             <tr>
-                                                <th
-                                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                <th><input type="checkbox" id="select-all"></th> {{-- Master checkbox --}}
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                     #ID</th>
-                                                <th
-                                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                                                     USER_ID</th>
-                                                <th
-                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                     Chauffeur</th>
-                                                <th
-                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                     Numéro Camion</th>
-                                                <th
-                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                     Type Camion</th>
-                                                <th
-                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                     Arrivée Prévue</th>
-                                                <th <th
-                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                     status</th>
-                                                <th
-                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                     Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
-
-
         </main>
 
         <!-- Core JS Files -->
-
         <script src="../assets/js/core/popper.min.js"></script>
         <script src="../assets/js/core/bootstrap.min.js"></script>
         <script src="../assets/js/plugins/perfect-scrollbar.min.js"></script>
@@ -266,39 +235,71 @@
         <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
         <script>
             $(document).ready(function() {
-                let datatable = $('#tableReservation').DataTable({
+                // Initialize DataTable
+                var table = $('#tableReservation').DataTable({
                     processing: true,
                     serverSide: true,
-                    ajax: '{{ route('reservations.index') }}',
-                    columns: [{
-                            data: 'id',
-                            name: 'id',
-                        },
-                        {
-                            data: 'user_id',
-                            name: 'user_id'
-                        },
-                        {
-                            data: 'chauffeur',
-                            name: 'chauffeur'
-                        },
-                        {
-                            data: 'numero_camion',
-                            name: 'numero_camion'
-                        },
-                        {
-                            data: 'type_camion',
-                            name: 'type_camion'
-                        },
-                        {
-                            data: 'arrivee_prevue',
-                            name: 'arrivee_prevue'
-                        },
-                        {
-                            data: 'status',
+                    ajax: {
+                        url: '{{ route('reservations.index') }}',
+                        data: function(d) {
+                            d.status = $('#statusFilter').val();
+                            d.arrivee_prevue = $('input[name="arrivee_prevue"]').val();
+                        }
+                    },
+                    paging: true,
+                    pageLength: 10,
+                    language: {
+                        "lengthMenu": "Afficher _MENU_ entrées",
+                        "zeroRecords": "Aucun enregistrement trouvé",
+                        "info": "Affichage de _START_ à _END_ sur _TOTAL_ entrées",
+                        "infoEmpty": "Affichage de 0 à 0 sur 0 entrées",
+                        "infoFiltered": "(filtré à partir de _MAX_ entrées totales)",
+                        "search": "Rechercher :",
+                        "paginate": {
+                            "first": "Premier",
+                            "last": "Dernier",
+                            "next": "Suivant",
+                            "previous": "Précédent"
+                        }
+                    },
+                    columnDefs: [{
+                        // Setup the checkbox column
+                        targets: 0,
+                        searchable: false,
+                        orderable: false,
+                        className: 'dt-body-center',
+                        render: function(data, type, full) {
+                            return '<input type="checkbox" class="reservation-checkbox" value="' + full.id + '">';
+                        }
+                    }],
+                    columns: [
+                        { data: null, defaultContent: '' }, // Checkbox column
+                        { data: 'id', name: 'id' },
+                        { data: 'user_id', name: 'user_id' },
+                        { data: 'chauffeur', name: 'chauffeur' },
+                        { data: 'numero_camion', name: 'numero_camion' },
+                        { data: 'type_camion', name: 'type_camion' },
+                        { data: 'arrivee_prevue', name: 'arrivee_prevue' },
+                        { 
+                            data: 'status', 
                             name: 'status',
                             render: function(data, type, row) {
-                                return `<span class="p-2 rounded-lg text-white font-semibold bg-${data == 'Confirmée' ? 'green-400' : data == 'En attente' ? 'yellow-400' : 'red-400'}">${data}</span>`;
+                                const options = ['Confirmée', 'En attente', 'Annulée'];
+                                const bgClass = {
+                                    'Confirmée': 'green-400',
+                                    'En attente': 'yellow-400',
+                                    'Annulée': 'red-400'
+                                };
+
+                                const optionTags = options.map(status => {
+                                    const selected = data === status ? 'selected' : '';
+                                    return `<option value="${status}" ${selected}>${status}</option>`;
+                                }).join('');
+
+                                return `
+                                <select class="status-dropdown bg-${bgClass[data]} text-white font-semibold p-1 rounded" data-id="${row.id}" style="padding: 7px !important; border-radius: 5px; border: none;">
+                                    ${optionTags}
+                                </select>`;
                             }
                         },
                         {
@@ -306,53 +307,118 @@
                             name: 'action',
                             orderable: false,
                             searchable: false,
-                            dom: "p",
                             render: function(data, type, row) {
                                 return `
-<div class="d-flex justify-content-center">
-    
-   
-    <button class="btn btn-link text-primary px-2 mb-0" title="Modifier" onclick="openModal('updateReservationModal')">
-        <i class="bx bx-pencil fs-5"></i>
-    </button>
-    <button class="btn btn-link text-danger px-2 mb-0" title="Supprimer" onclick="confirmDelete(${row.id})">
-        <i class="bx bx-trash fs-5"></i>
-    </button>
-     
-</div>`;
+                                <div class="d-flex justify-content-center">
+                                    <button class="btn btn-link text-primary px-2 mb-0"
+                                            title="Modifier"
+                                            onclick="openModal('updateReservationModal')">
+                                        <i class="bx bx-pencil fs-5"></i>
+                                    </button>
+                                    <button class="btn btn-link text-danger px-2 mb-0"
+                                            title="Supprimer"
+                                            onclick="confirmDelete(${row.id})">
+                                        <i class="bx bx-trash fs-5"></i>
+                                    </button>
+                                </div>`;
                             }
-
-
-                        },
+                        }
                     ]
                 });
+
+                // Handle "select all" checkbox
+                $('#select-all').on('click', function() {
+                    $('.reservation-checkbox').prop('checked', this.checked);
+                });
+                
+                // When individual checkboxes change, update the "select all" checkbox
+                $('#tableReservation tbody').on('change', '.reservation-checkbox', function() {
+                    // If any checkbox is unchecked, uncheck the "select all" checkbox
+                    if (!this.checked) {
+                        $('#select-all').prop('checked', false);
+                    } 
+                    // If all checkboxes are checked, check the "select all" checkbox
+                    else if ($('.reservation-checkbox:checked').length === $('.reservation-checkbox').length) {
+                        $('#select-all').prop('checked', true);
+                    }
+                });
+
+                // Filter handlers
+                $('#statusFilter').on('change', function() {
+                    table.ajax.reload();
+                });
+                
+                $('input[name="arrivee_prevue"]').on('change', function() {
+                    table.ajax.reload();
+                });
+
+                // Status dropdown change handler
+                $('#tableReservation').on('change', '.status-dropdown', function() {
+                    const reservationId = $(this).data('id');
+                    const newStatus = $(this).val();
+                    const $dropdown = $(this);
+
+                    $.ajax({
+                        url: `/reservations/${reservationId}/status`,
+                        type: 'PUT',
+                        data: {
+                            status: newStatus,
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function() {
+                            // Define the colors again
+                            const bgClassMap = {
+                                'Confirmée': 'green-400',
+                                'En attente': 'yellow-400',
+                                'Annulée': 'red-400'
+                            };
+
+                            // Remove old bg classes
+                            $dropdown.removeClass('bg-green-400 bg-yellow-400 bg-red-400');
+
+                     
+                            $dropdown.addClass(`bg-${bgClassMap[newStatus]}`);
+                        },
+                        error: function() {
+                            alert('Failed to update status');
+                        }
+                    });
+                });
+
+             
                 $('#customSearchBox').on('input', function() {
-                    datatable.search(this.value).draw();
+                    table.search(this.value).draw();
+                });
+                
+       
+                $('#export-selected-pdf').on('click', function() {
+                    const selectedIds = [];
+
+        
+                    $('.reservation-checkbox:checked').each(function() {
+                        selectedIds.push($(this).val());
+                    });
+
+                    if (selectedIds.length === 0) {
+                        alert('Veuillez sélectionner au moins une réservation à exporter');
+                        return;
+                    }
+
+                    const form = $('<form action="/export-selected-pdf" method="POST"></form>');
+                    form.append('<input type="hidden" name="_token" value="{{ csrf_token() }}">');
+
+                    
+                    selectedIds.forEach(function(id) {
+                        form.append('<input type="hidden" name="ids[]" value="' + id + '">');
+                    });
+
+                  
+                    $('body').append(form);
+                    form.submit();
+                    form.remove();
                 });
             });
-        </script>
-        <script>
-            function showViewModal(id) {
-                $.get(`/reservations/${id}`, function(data) {
-                    $('#viewReservationContent').html(data);
-                    $('#viewReservationModal').modal('show');
-                });
-            }
 
-            function showEditModal(id) {
-                $.get(`/reservations/${id}/edit`, function(formHtml) {
-                    $('#editReservationContent').html(formHtml);
-                    $('#editReservationModal').modal('show');
-                });
-            }
-
-            function confirmDelete(id) {
-                $('#deleteReservationForm').attr('action', `/reservations/${id}`);
-                $('#deleteReservationModal').modal('show');
-            }
-        </script>
-
-        <script>
             function openModal(id) {
                 document.getElementById(id).classList.remove('hidden');
                 document.getElementById(id).classList.add('flex');
@@ -362,10 +428,7 @@
                 document.getElementById(id).classList.add('hidden');
                 document.getElementById(id).classList.remove('flex');
             }
-        </script>
 
-
-        <script>
             function confirmDelete(id) {
                 Swal.fire({
                     title: 'Êtes-vous sûr de supprimée la reservations ?',
@@ -391,15 +454,11 @@
                                     'success'
                                 )
                                 $('#tableReservation').DataTable().ajax.reload();
-                            },
-
+                            }
                         });
                     }
                 });
             }
         </script>
-
-
-
     </body>
 @endsection

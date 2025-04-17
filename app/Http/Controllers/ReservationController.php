@@ -22,14 +22,20 @@ class ReservationController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-            $data = Reservation::with('user')->select('reservations.*');
 
-            return DataTables::of($data)
+            $query = Reservation::with('user')->select('reservations.*');
+
+
+            if ($request->filled('status')) {
+                $query->where('status', $request->status);
+            }
+            if ($request->filled('arrivee_prevue')) {
+                $query->whereDate('arrivee_prevue', '=', date('Y-m-d', strtotime($request->arrivee_prevue)));
+            }
+            return DataTables::of($query)
                 ->addColumn('action', function ($row) {
-                    $id = $row->id;
-                    return view('reservation', compact('id'))->render();
+                    return view('reservation', ['id' => $row->id])->render();
                 })
-                ->addColumn('action',fn($data)=>view('Popup',['user'=>$data])->render())
                 ->setRowClass('text-center align-middle text-sm text-black whitespace-nowrap')
                 ->rawColumns(['action'])
                 ->make(true);
@@ -37,6 +43,15 @@ class ReservationController extends Controller
 
         return view('reservation');
     }
+    public function updateStatus(Request $request, $id)
+    {
+        $reservation = Reservation::findOrFail($id);
+        $reservation->status = $request->status;
+        $reservation->save();
+
+        return response()->json(['message' => 'Status updated successfully']);
+    }
+
 
 
 
@@ -90,13 +105,13 @@ class ReservationController extends Controller
             'arrivee_prevue' => $validated['arrivee_prevue'],
         ];
 
-        
+
 
         Mail::to($validated['email'])->send(new SendUserConfirmationMail($data));
         Mail::to('hia807976@gmail.com')->send(new NotifyAdminOfSubmissionMail($data));
 
 
-        return redirect()->back()->with('success', 'Réservation créée avec succès !');
+        return redirect()->back()->with('success', 'Réservation créée avec succès!');
     }
 
     /**
@@ -185,5 +200,29 @@ class ReservationController extends Controller
         $reservation->delete();
 
         return redirect()->back()->with('success', 'Réservation supprimée avec succès.');
+    }
+
+
+
+    public function exportSelectedPdf(Request $request)
+    {
+        // Validate that we have some IDs
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'integer|exists:reservations,id'
+        ]);
+
+        // Get only the selected reservations
+        $reservations = Reservation::with('user')
+            ->whereIn('id', $request->ids)
+            ->get();
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('exports.reservations-pdf', [
+            'reservations' => $reservations,
+            'date' => date('Y-m-d H:i:s'),
+            'isSelected' => true // Optional flag to indicate these are selected items
+        ]);
+
+        return $pdf->download('selected-reservations-' . date('Y-m-d') . '.pdf');
     }
 }

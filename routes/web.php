@@ -46,6 +46,7 @@ Route::post('/reservations', [App\Http\Controllers\ReservationController::class,
 
 Route::get('/reservations/export/excel', [App\Http\Controllers\ReservationController::class, 'exportExcel'])->name('reservations.export.excel');
 
-
+Route::post('/export-selected-pdf', [App\Http\Controllers\ReservationController::class, 'exportSelectedPdf'])
+    ->name('reservations.export.selected.pdf');
 
 require __DIR__ . '/auth.php';
