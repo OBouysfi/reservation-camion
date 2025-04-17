@@ -373,7 +373,7 @@
                         </div>
 
 
-                        <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 text-white">
+                        <div class="space-y-3 text-white">
                             <div class="text-center">
                                 <h4 class="font-semibold mb-2">Address</h4>
                                 <p>TGIC Pennsylvania Ave NW<br>Washington, D.C. 20500, USA</p>
