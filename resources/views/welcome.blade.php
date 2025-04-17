@@ -187,7 +187,7 @@ body {
             <div class="logo">
                 <img src="{{ asset('Logo4.png') }}" class="navbar-brand-img size-26 h-20  " alt="main_logo">
             </div>
-            {{-- <h1 class=" !text-lg font-bold">Camaway</h1> --}}
+            <h1 class=" !text-lg font-bold">Camaway</h1>
         </div>
         <div class="auth-buttons">
             <a href="{{ route('login') }}" class="btn btn-outline">Se connecter</a>

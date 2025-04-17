@@ -2,24 +2,22 @@
 
 @section('content')
     <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
-        <!-- Navbar -->
+        <!-- Barre de navigation -->
         <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur"
             navbar-scroll="true">
             <div class="container-fluid py-1 px-3">
             
-                <h2 class="pt-6 pb-2">{{ date('H') > 8 && date('H') <= 16 ? 'Bonsoir' : 'Bonjour' }}
-                    {{ auth()->user()->name }}
-                </h2>
+                <h2 class="pt-6 pb-2">{{ (date('H') >= 12 && date('H') < 18) ? 'Bonsoir' : 'Bonjour' }} {{ auth()->user()->name }}</h2>
             </div>
         </nav>
-        <!-- End Navbar -->
+        <!-- Fin de la barre de navigation -->
         <div class="container-fluid py-4" style="background-color: #f8f9fa;">
 
             <div class="row">
-                <!-- Left side cards -->
+                <!-- Cartes côté gauche -->
                 <div class="col-lg-6">
                     <div class="row">
-                        <!-- First left card -->
+                        <!-- Première carte gauche -->
                         <div class="col-lg-12 mb-4">
                             <div class="card">
                                 <span class="mask bg-primary opacity-10 border-radius-lg"></span>
@@ -29,14 +27,14 @@
                                             <div class="icon icon-shape bg-white shadow text-center border-radius-2xl">
                                                 <i class='bx bx-loader-circle !text-black fs-3'></i>
                                             </div>
-                                            <h5 class="text-white font-weight-bolder mb-0 mt-3">1600</h5>
-                                            <span class="text-white text-sm">Réservations du Mois en Cours</span>
+                                            <h5 class="text-white font-weight-bolder mb-0 mt-3">{{ $totalReservations }}</h5>
+                                            <span class="text-white text-sm">Réservations totales</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <!-- Second left card -->
+                        <!-- Deuxième carte gauche -->
                         <div class="col-lg-12">
                             <div class="card">
                                 <span class="mask bg-dark opacity-10 border-radius-lg"></span>
@@ -47,7 +45,7 @@
                                                 <i class='bx bx-calendar-check !text-black fs-3'></i>
                                             </div>
                                             <h5 class="text-white font-weight-bolder mb-0 mt-3">357</h5>
-                                            <span class="text-white text-sm">Réservations des 3 Derniers Mois</span>
+                                            <span class="text-white text-sm">Réservations des 3 derniers mois</span>
                                         </div>
                                     </div>
                                 </div>
@@ -56,10 +54,10 @@
                     </div>
                 </div>
 
-                <!-- Right side cards -->
+                <!-- Cartes côté droit -->
                 <div class="col-lg-6">
                     <div class="row">
-                        <!-- First right card -->
+                        <!-- Première carte droite -->
                         <div class="col-lg-12 mb-4">
                             <div class="card">
                                 <span class="mask bg-dark opacity-10 border-radius-lg"></span>
@@ -70,13 +68,13 @@
                                                 <i class='bx bx-calendar-event !text-black fs-3'></i>
                                             </div>
                                             <h5 class="text-white font-weight-bolder mb-0 mt-3">2300</h5>
-                                            <span class="text-white text-sm">Réservations de l'Année en Cours</span>
+                                            <span class="text-white text-sm">Réservations de l'année en cours</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <!-- Second right card -->
+                        <!-- Deuxième carte droite -->
                         <div class="col-lg-12">
                             <div class="card">
                                 <span class="mask bg-dark opacity-10 border-radius-lg"></span>
@@ -87,7 +85,7 @@
                                                 <i class='bx bx-history !text-black fs-3'></i>
                                             </div>
                                             <h5 class="text-white font-weight-bolder mb-0 mt-3">940</h5>
-                                            <span class="text-white text-sm">Historique Annuel des Réservations</span>
+                                            <span class="text-white text-sm">Historique annuel des réservations</span>
                                         </div>
                                     </div>
                                 </div>
@@ -113,10 +111,8 @@
                                     <ul class="dropdown-menu px-2 py-3 ms-sm-n4 ms-n5" aria-labelledby="dropdownTable">
                                         <li><a class="dropdown-item border-radius-md" href="javascript:;">Action</a>
                                         </li>
-                                        <li><a class="dropdown-item border-radius-md" href="javascript:;">Another
-                                                action</a></li>
-                                        <li><a class="dropdown-item border-radius-md" href="javascript:;">Something
-                                                else here</a></li>
+                                        <li><a class="dropdown-item border-radius-md" href="javascript:;">Autre action</a></li>
+                                        <li><a class="dropdown-item border-radius-md" href="javascript:;">Autre option</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -137,8 +133,8 @@
                                 <canvas id="chart-bars" class="chart-canvas" height="170"></canvas>
                             </div>
                         </div>
-                        <h6 class="ms-2 mt-4 mb-0"> Active Users </h6>
-                        <p class="text-sm ms-2"> (<span class="font-weight-bolder">+23%</span>) than last week
+                        <h6 class="ms-2 mt-4 mb-0"> Utilisateurs actifs </h6>
+                        <p class="text-sm ms-2"> (<span class="font-weight-bolder">+23%</span>) par rapport à la semaine dernière
                         </p>
                         <div class="container border-radius-lg">
                             <div class="row">
@@ -167,14 +163,19 @@
                                                 </g>
                                             </svg>
                                         </div>
-                                        <p class="text-xs mt-1 mb-0 font-weight-bold">Users</p>
+                                        <p class="text-xs mt-1 mb-0 font-weight-bold">Utilisateurs</p>
                                     </div>
-                                    <h4 class="font-weight-bolder">36K</h4>
-                                    <div class="progress w-75">
-                                        <div class="progress-bar bg-dark w-60" role="progressbar" aria-valuenow="60"
-                                            aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                </div>
+                                    <h4 class="font-weight-bolder">@if(isset($totalUsers))
+                                        {{ $totalUsers }}
+                                    @else
+                                        0
+                                    @endif</h4>
+                                    <div class="progress-bar bg-dark w-{{ min(($totalUsers ?? 0) * 10, 100) }}" role="progressbar" 
+     aria-valuenow="{{ $totalUsers ?? 0 }}" 
+     aria-valuemin="0" 
+     aria-valuemax="10">
+</div>
+                                </div> 
                                 <div class="col-3 py-3 ps-0">
                                     <div class="d-flex mb-2">
                                         <div
@@ -206,7 +207,7 @@
                                                 </g>
                                             </svg>
                                         </div>
-                                        <p class="text-xs mt-1 mb-0 font-weight-bold">Clicks</p>
+                                        <p class="text-xs mt-1 mb-0 font-weight-bold">Clics</p>
                                     </div>
                                     <h4 class="font-weight-bolder">2m</h4>
                                     <div class="progress w-75">
@@ -239,7 +240,7 @@
                                                 </g>
                                             </svg>
                                         </div>
-                                        <p class="text-xs mt-1 mb-0 font-weight-bold">Sales</p>
+                                        <p class="text-xs mt-1 mb-0 font-weight-bold">Ventes</p>
                                     </div>
                                     <h4 class="font-weight-bolder">435$</h4>
                                     <div class="progress w-75">
@@ -275,7 +276,7 @@
                                                 </g>
                                             </svg>
                                         </div>
-                                        <p class="text-xs mt-1 mb-0 font-weight-bold">Items</p>
+                                        <p class="text-xs mt-1 mb-0 font-weight-bold">Éléments</p>
                                     </div>
                                     <h4 class="font-weight-bolder">43</h4>
                                     <div class="progress w-75">
@@ -291,10 +292,10 @@
             <div class="col-lg-7">
                 <div class="card z-index-2">
                     <div class="card-header pb-0">
-                        <h6>Reservations par mois</h6>
+                        <h6>Réservations par mois</h6>
                         <p class="text-sm">
                             <i class="fa fa-arrow-up text-success"></i>
-                            <span class="font-weight-bold">4% more</span> in Aug
+                            <span class="font-weight-bold">4% de plus</span> en août
                         </p>
                     </div>
                     <div class="card-body p-3">

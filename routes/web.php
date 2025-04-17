@@ -46,6 +46,7 @@ Route::post('/reservations', [App\Http\Controllers\ReservationController::class,
 
 Route::get('/reservations/export/excel', [App\Http\Controllers\ReservationController::class, 'exportExcel'])->name('reservations.export.excel');
 
+Route::get('/dashboard', [AdminController::class, 'stats'])->name('dashboard');
 
 
 require __DIR__ . '/auth.php';
