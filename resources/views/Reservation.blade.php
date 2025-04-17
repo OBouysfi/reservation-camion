@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+
     <body class="g-sidenav-show bg-gray-100">
         <style>
             .dataTables_wrapper .dataTables_filter {
@@ -85,7 +86,8 @@
                                                 <i class="bx bxs-file-export fs-5"></i>
                                                 <span>Excel</span>
                                             </a>
-                                            <button id="export-selected-pdf" class="btn btn-warning shadow-sm d-flex align-items-center gap-2">
+                                            <button id="export-selected-pdf"
+                                                class="btn btn-warning shadow-sm d-flex align-items-center gap-2">
                                                 <i class="bx bxs-file-pdf fs-5"></i>
                                                 <span>Export Selected</span>
                                             </button>
@@ -180,21 +182,29 @@
                                         <thead>
                                             <tr>
                                                 <th><input type="checkbox" id="select-all"></th> {{-- Master checkbox --}}
-                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                <th
+                                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                     #ID</th>
-                                                <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                <th
+                                                    class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
                                                     USER_ID</th>
-                                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                <th
+                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                     Chauffeur</th>
-                                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                <th
+                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                     Numéro Camion</th>
-                                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                <th
+                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                     Type Camion</th>
-                                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                <th
+                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                     Arrivée Prévue</th>
-                                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                <th
+                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                     status</th>
-                                                <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                <th
+                                                    class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                     Actions</th>
                                             </tr>
                                         </thead>
@@ -269,19 +279,40 @@
                         orderable: false,
                         className: 'dt-body-center',
                         render: function(data, type, full) {
-                            return '<input type="checkbox" class="reservation-checkbox" value="' + full.id + '">';
+                            return '<input type="checkbox" class="reservation-checkbox" value="' +
+                                full.id + '">';
                         }
                     }],
-                    columns: [
-                        { data: null, defaultContent: '' }, // Checkbox column
-                        { data: 'id', name: 'id' },
-                        { data: 'user_id', name: 'user_id' },
-                        { data: 'chauffeur', name: 'chauffeur' },
-                        { data: 'numero_camion', name: 'numero_camion' },
-                        { data: 'type_camion', name: 'type_camion' },
-                        { data: 'arrivee_prevue', name: 'arrivee_prevue' },
-                        { 
-                            data: 'status', 
+                    columns: [{
+                            data: null,
+                            defaultContent: ''
+                        }, // Checkbox column
+                        {
+                            data: 'id',
+                            name: 'id'
+                        },
+                        {
+                            data: 'user_id',
+                            name: 'user_id'
+                        },
+                        {
+                            data: 'chauffeur',
+                            name: 'chauffeur'
+                        },
+                        {
+                            data: 'numero_camion',
+                            name: 'numero_camion'
+                        },
+                        {
+                            data: 'type_camion',
+                            name: 'type_camion'
+                        },
+                        {
+                            data: 'arrivee_prevue',
+                            name: 'arrivee_prevue'
+                        },
+                        {
+                            data: 'status',
                             name: 'status',
                             render: function(data, type, row) {
                                 const options = ['Confirmée', 'En attente', 'Annulée'];
@@ -310,15 +341,21 @@
                             render: function(data, type, row) {
                                 return `
                                 <div class="d-flex justify-content-center">
+
                                     <button class="btn btn-link text-primary px-2 mb-0"
                                             title="Modifier"
                                             onclick="openModal('updateReservationModal')">
                                         <i class="bx bx-pencil fs-5"></i>
                                     </button>
-                                    <button class="btn btn-link text-danger px-2 mb-0"
+                                    <button class="btn btn-link text-primary px-2 mb-0"
                                             title="Supprimer"
                                             onclick="confirmDelete(${row.id})">
                                         <i class="bx bx-trash fs-5"></i>
+                                    </button>
+                                    <button class="btn btn-link text-primary px-2 mb-0"
+                                            title="details"
+                                            onclick="openModal('updateReservationModal')">
+                                    <i class='bx bx-dots-horizontal-rounded fs-5' ></i>
                                     </button>
                                 </div>`;
                             }
@@ -330,13 +367,13 @@
                 $('#select-all').on('click', function() {
                     $('.reservation-checkbox').prop('checked', this.checked);
                 });
-                
+
                 // When individual checkboxes change, update the "select all" checkbox
                 $('#tableReservation tbody').on('change', '.reservation-checkbox', function() {
                     // If any checkbox is unchecked, uncheck the "select all" checkbox
                     if (!this.checked) {
                         $('#select-all').prop('checked', false);
-                    } 
+                    }
                     // If all checkboxes are checked, check the "select all" checkbox
                     else if ($('.reservation-checkbox:checked').length === $('.reservation-checkbox').length) {
                         $('#select-all').prop('checked', true);
@@ -347,7 +384,7 @@
                 $('#statusFilter').on('change', function() {
                     table.ajax.reload();
                 });
-                
+
                 $('input[name="arrivee_prevue"]').on('change', function() {
                     table.ajax.reload();
                 });
@@ -376,7 +413,7 @@
                             // Remove old bg classes
                             $dropdown.removeClass('bg-green-400 bg-yellow-400 bg-red-400');
 
-                     
+
                             $dropdown.addClass(`bg-${bgClassMap[newStatus]}`);
                         },
                         error: function() {
@@ -385,16 +422,16 @@
                     });
                 });
 
-             
+
                 $('#customSearchBox').on('input', function() {
                     table.search(this.value).draw();
                 });
-                
-       
+
+
                 $('#export-selected-pdf').on('click', function() {
                     const selectedIds = [];
 
-        
+
                     $('.reservation-checkbox:checked').each(function() {
                         selectedIds.push($(this).val());
                     });
@@ -407,12 +444,12 @@
                     const form = $('<form action="/export-selected-pdf" method="POST"></form>');
                     form.append('<input type="hidden" name="_token" value="{{ csrf_token() }}">');
 
-                    
+
                     selectedIds.forEach(function(id) {
                         form.append('<input type="hidden" name="ids[]" value="' + id + '">');
                     });
 
-                  
+
                     $('body').append(form);
                     form.submit();
                     form.remove();

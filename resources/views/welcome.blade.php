@@ -218,8 +218,12 @@
             <h1 class=" !text-lg font-bold">Camaway</h1>
         </div>
         <div class="auth-buttons">
-            <a href="{{ route('login') }}" class="btn btn-outline">Se connecter</a>
-            <a href="{{ route('register') }}" class="btn btn-solid">S'inscrire</a>
+            @if (!Auth::check())
+                <a href="{{ route('login') }}" class="btn btn-outline">Se connecter</a>
+                <a href="{{ route('register') }}" class="btn btn-solid">S'inscrire</a>
+            @else
+                <a href="{{ route('dashboard') }}" class="btn btn-solid">Dashboard</a>
+            @endif
         </div>
     </header>
 
@@ -373,10 +377,10 @@
                         </div>
 
 
-                        <div class="space-y-3 text-white">
+                        <div class="grid grid-cols-2 items-end space-y-6 text-white">
                             <div class="text-center">
                                 <h4 class="font-semibold mb-2">Address</h4>
-                                <p>TGIC Pennsylvania Ave NW<br>Washington, D.C. 20500, USA</p>
+                                <p>TGIC Pennsylvania Ave NW</p>
                             </div>
                             <div class="text-center">
                                 <h4 class="font-semibold mb-2">Contact</h4>
@@ -384,7 +388,7 @@
                             </div>
                             <div class="text-center">
                                 <h4 class="font-semibold mb-2">Email</h4>
-                                <p>info@example.com<br>support@example.com</p>
+                                <p>info@example.com</p>
                             </div>
                         </div>
                 </div>
