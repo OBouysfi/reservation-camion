@@ -7,7 +7,7 @@
             navbar-scroll="true">
             <div class="container-fluid py-1 px-3">
             
-                <h2 class="pt-6 pb-2">{{ (date('H') >= 12 && date('H') < 18) ? 'Bonsoir' : 'Bonjour' }} {{ auth()->user()->name }}</h2>
+                <h2 class="pt-6 pb-2">{{ (date('H') >= 12 && date('H') < 23) ? 'Bonsoir' : 'Bonjour' }} {{ auth()->user()->name }}</h2>
             </div>
         </nav>
         <!-- Fin de la barre de navigation -->
