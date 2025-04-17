@@ -399,24 +399,37 @@
 
                     // Show SweetAlert confirmation
                     Swal.fire({
-                            title: 'Êtes‑vous sûr ?',
-                            text: `Voulez‑vous changer le statut en ${newStatus} ?`,
+                            title: 'Êtes‑vous sûr ?',
+                            text: `Voulez‑vous changer le statut en ${newStatus} ?`,
                             icon: 'warning',
                             showCancelButton: true,
                             confirmButtonText: 'Oui, changer',
-                            cancelButtonText: 'Annuler'
+                            cancelButtonText: 'Annuler',
+                            confirmButtonColor: '#3085d6',
+                            cancelButtonColor: '#d33'
                         })
                         .then((result) => {
                             if (result.isConfirmed) {
+                                // Afficher une alerte de chargement pendant la requête AJAX
+                                Swal.fire({
+                                    title: 'Modification en cours...',
+                                    text: 'Veuillez patienter pendant la mise à jour du statut',
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
+                                    didOpen: () => {
+                                        Swal.showLoading();
+                                    }
+                                });
+
                                 $.ajax({
                                     url: "{{ route('reservations.updateStatus', '') }}/" +
-                                        reservationId, // Fixed URL format
+                                        reservationId,
                                     type: 'PUT',
                                     data: {
                                         status: newStatus,
                                         _token: '{{ csrf_token() }}'
                                     },
-                                    success: function() {
+                                    success: function(response) {
                                         // Define the colors again
                                         const bgClassMap = {
                                             'Confirmée': 'green-400',
@@ -429,12 +442,27 @@
                                             'bg-green-400 bg-yellow-400 bg-red-400');
 
                                         // Add the new one
-                                        $dropdown.addClass(
-                                            `bg-${bgClassMap[newStatus]}`
-                                        ); // Fixed string template
+                                        $dropdown.addClass(`bg-${bgClassMap[newStatus]}`);
+
+                                        // Afficher une notification de succès
+                                        Swal.fire({
+                                            title: 'Statut modifié!',
+                                            text: `Le statut a été changé en "${newStatus}" avec succès`,
+                                            icon: 'success',
+                                            timer: 2500,
+                                            timerProgressBar: true,
+                                            showConfirmButton: false
+                                        });
                                     },
-                                    error: function() {
-                                        alert('Failed to update status');
+                                    error: function(xhr, status, error) {
+                                        // Afficher une notification d'erreur avec plus de détails
+                                        Swal.fire({
+                                            title: 'Erreur!',
+                                            text: `Impossible de modifier le statut: ${xhr.responseText || error}`,
+                                            icon: 'error',
+                                            confirmButtonColor: '#3085d6',
+                                            confirmButtonText: 'OK'
+                                        });
                                     }
                                 });
                             }

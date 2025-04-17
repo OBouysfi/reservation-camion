@@ -16,7 +16,7 @@
     </form>
 
     <!-- Formulaire principal -->
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6" enctype="multipart/form-data">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6" enctype="multipart/form-data" id="profile-form">
         @csrf
         @method('patch')
 
@@ -35,7 +35,7 @@
                     </svg>
                 </button>
                 <input type="file" id="profileImage" name="profile_photo" accept="image/*" class="d-none"
-                    onchange="this.form.submit()">
+                    onchange="uploadProfileImage(this)">
             </div>
             <p class="text-xs text-gray-500">{{ __('Cliquez sur l\'icône appareil photo pour changer votre photo de profil') }}</p>
             <x-input-error class="mt-2" :messages="$errors->get('profile_image')" />
@@ -64,7 +64,7 @@
                     <p class="text-sm mt-2 text-gray-800">
                         {{ __('Votre adresse email n\'est pas vérifiée.') }}
 
-                        <button form="send-verification"
+                        <button form="send-verification" id="resend-verification"
                             class="underline text-sm text-gray-800 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                             {{ __('Cliquez ici pour renvoyer l\'email de vérification.') }}
                         </button>
@@ -80,8 +80,8 @@
         </div>
 
         <!-- Bouton de soumission -->
-        <div class="flex items-center gap-4">
-            <x-primary-button class="w-full !rounded-lg !border-none">{{ __('Enregistrer') }}</x-primary-button>
+        <div class="flex items-end !justify-end gap-4">
+            <x-primary-button type="button" id="save-profile-btn" class="!rounded-lg !border-none">{{ __('Enregistrer') }}</x-primary-button>
 
             @if (session('status') === 'profile-updated')
                 <p x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 2000)"
@@ -90,12 +90,111 @@
         </div>
     </form>
 
-    <!-- Script pour la gestion de l'image -->
+    <!-- Inclusion de SweetAlert -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.12/sweetalert2.all.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.12/sweetalert2.min.css" rel="stylesheet">
+
+    <!-- Script pour la gestion des interactions -->
     <script>
-        document.getElementById('profileImage').addEventListener('change', function() {
-            this.form.submit();
+        // Pour l'upload de la photo de profil
+        function uploadProfileImage(input) {
+            if (input.files && input.files[0]) {
+                // Prévisualisation de l'image
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profileImagePreview').src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+                
+                // Afficher SweetAlert pour confirmer le téléchargement
+                Swal.fire({
+                    title: 'Photo sélectionnée',
+                    text: 'Voulez-vous télécharger cette photo de profil?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Oui, télécharger',
+                    cancelButtonText: 'Annuler',
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Soumettre le formulaire
+                        document.getElementById('profile-form').submit();
+                    }
+                });
+            }
+        }
+
+        // Pour la soumission du formulaire
+        document.getElementById('save-profile-btn').addEventListener('click', function() {
+            Swal.fire({
+                title: 'Enregistrer les modifications?',
+                text: 'Vos informations de profil seront mises à jour',
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Enregistrer',
+                cancelButtonText: 'Annuler',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('profile-form').submit();
+                }
+            });
         });
+
+        // Pour l'email de vérification
+        const resendBtn = document.getElementById('resend-verification');
+        if (resendBtn) {
+            resendBtn.addEventListener('click', function(event) {
+                event.preventDefault();
+                
+                Swal.fire({
+                    title: 'Renvoyer l\'email de vérification?',
+                    text: 'Un nouveau lien de vérification sera envoyé à votre adresse email',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Envoyer',
+                    cancelButtonText: 'Annuler',
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('send-verification').submit();
+                        
+                        Swal.fire({
+                            title: 'Email envoyé!',
+                            text: 'Un nouveau lien de vérification a été envoyé à votre adresse email',
+                            icon: 'success',
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
+                    }
+                });
+            });
+        }
+
+        // Afficher une notification si le profil a été mis à jour avec succès
+        @if (session('status') === 'profile-updated')
+            Swal.fire({
+                title: 'Profil mis à jour!',
+                text: 'Vos informations ont été enregistrées avec succès',
+                icon: 'success',
+                timer: 2000,
+               
+                showConfirmButton: false
+            });
+        @endif
+
+        // Afficher une notification si le lien de vérification a été envoyé
+        @if (session('status') === 'verification-link-sent')
+            Swal.fire({
+                title: 'Email envoyé!',
+                text: 'Un nouveau lien de vérification a été envoyé à votre adresse email',
+                icon: 'success',
+                timer: 3000,
+                timerProgressBar: true
+            });
+        @endif
     </script>
 </section>
-
-<!-- Section Gestion des Images -->
