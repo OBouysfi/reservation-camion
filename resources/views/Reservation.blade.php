@@ -76,11 +76,11 @@
                                     </div>
                                     <div class="col-md-5">
                                         <div class="d-flex gap-2 mt-3">
-                                            <a href="{{ route('reservations.export.pdf') }}"
+                                            {{-- <a href="{{ route('reservations.export.pdf') }}"
                                                 class="btn btn-danger shadow-sm d-flex align-items-center gap-2">
                                                 <i class="bx bxs-file-pdf fs-5"></i>
                                                 <span>PDF</span>
-                                            </a>
+                                            </a> --}}
                                             <a href="{{ route('reservations.export.excel') }}"
                                                 class="btn btn-success shadow-sm d-flex align-items-center gap-2">
                                                 <i class="bx bxs-file-export fs-5"></i>
@@ -89,7 +89,7 @@
                                             <button id="export-selected-pdf"
                                                 class="btn btn-warning shadow-sm d-flex align-items-center gap-2">
                                                 <i class="bx bxs-file-pdf fs-5"></i>
-                                                <span>exporter la sélection</span>
+                                                <span>PDF</span>
                                             </button>
                                         </div>
                                     </div>
@@ -168,6 +168,14 @@
                         </div>
                     </div>
                 </div>
+
+
+
+
+
+
+
+
                 <!-- Table Section -->
                 <div class="row">
                     <div class="col-12">
@@ -342,26 +350,7 @@
                             name: 'action',
                             orderable: false,
                             searchable: false,
-                            render: function(data, type, row) {
-                                return `
-                    <div class="d-flex justify-content-center">
-                        <button class="btn btn-link text-primary px-2 mb-0"
-                                title="Modifier"
-                                onclick="openModal('updateReservationModal')">
-                            <i class="bx bx-pencil fs-5"></i>
-                        </button>
-                        <button class="btn btn-link text-primary px-2 mb-0"
-                                title="Supprimer"
-                                onclick="confirmDelete(${row.id})">
-                            <i class="bx bx-trash fs-5"></i>
-                        </button>
-                        <button class="btn btn-link text-primary px-2 mb-0"
-                                title="details"
-                                onclick="openModal('updateReservationModal')">
-                            <i class='bx bx-dots-horizontal-rounded fs-5'></i>
-                        </button>
-                    </div>`;
-                            }
+
                         }
                     ]
                 });
@@ -465,7 +454,7 @@
                                         });
                                     }
                                 });
-                            } 
+                            }
                         });
                 });
 
@@ -538,8 +527,22 @@
                         });
                     }
                 });
+
             }
         </script>
+        @if (session('success'))
+            <script>
+                window.onload = function() {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Succès !',
+                        text: {{ Js::from(session('success')) }},
+                        timer: 2500,
+                        showConfirmButton: false
+                    });
+                };
+            </script>
+        @endif
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     </body>

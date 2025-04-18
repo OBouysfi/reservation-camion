@@ -43,5 +43,15 @@ class AdminController extends Controller
             'totalUsers' => $totalUsers
         ]);
     }
+    public function adminsRes()
+    {
+        $totalReservations = Reservation::count();
+        $totalUsers = User::count();
+        
+        return view('profile.partials.update', [
+            'totalReservations' => $totalReservations,
+            'totalUsers' => $totalUsers
+        ]);
+    }
     
 }

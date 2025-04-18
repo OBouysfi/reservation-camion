@@ -36,12 +36,13 @@ class ReservationController extends Controller
                 $query->whereDate('arrivee_prevue', '=', date('Y-m-d', strtotime($request->arrivee_prevue)));
             }
             return DataTables::of($query)
-                ->addColumn('action', function ($row) {
-                    return view('reservation', ['id' => $row->id])->render();
+                ->addColumn('action', function ($reservation) {
+                    return view('profile.partials.update', compact('reservation'))->render();
                 })
                 ->setRowClass('text-center align-middle text-sm text-black whitespace-nowrap')
                 ->rawColumns(['action'])
                 ->make(true);
+
         }
 
         return view('reservation');
@@ -64,7 +65,7 @@ class ReservationController extends Controller
 
             } catch (TransportExceptionInterface $e) {
                 // This catches any low‑level transport error (SMTP down, auth failed, etc)
-                Log::error("Reservation #{$reservation->id} mail send failed: " . $e->getMessage());
+
 
                 return response()->json([
                     'message' => 'Status updated, but email sending failed.',
@@ -72,7 +73,7 @@ class ReservationController extends Controller
                 ], 500);
             } catch (\Exception $e) {
                 // Catch any other errors (template errors, queue failures, etc)
-                Log::error("Reservation #{$reservation->id} mail error: " . $e->getMessage());
+
 
                 return response()->json([
                     'message' => 'Status updated, but email sending encountered an error.',
@@ -230,11 +231,11 @@ class ReservationController extends Controller
     {
         $validated = $request->validate([
             'user_id' => 'exists:users, id',
-            'email' => 'required|email',
-            'chauffeur' => 'required|string|max:255',
-            'numero_camion' => 'required|string|max:255',
-            'type_camion' => 'required|in:Plateau,Rideau coulissant',
-            'arrivee_prevue' => 'required|date',
+            'email' => 'nullable|required|email',
+            'chauffeur' => 'nullable|string|max:255',
+            'numero_camion' => 'nullable|required|string|max:255',
+            'type_camion' => 'nullable|required|in:Plateau,Rideau coulissant',
+            'arrivee_prevue' => 'nullable|required|date',
         ]);
 
         $reservation->update($validated);
@@ -249,8 +250,9 @@ class ReservationController extends Controller
     public function destroy(Reservation $reservation)
     {
         $reservation->delete();
+        return redirect()->route('reservations.index')->with('success', "Réservation supprimée avec succès.");
 
-        return redirect()->back()->with('success', 'Réservation supprimée avec succès.');
+       
     }
 
 

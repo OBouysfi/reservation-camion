@@ -15,7 +15,7 @@
     >{{ __('Supprimer le compte') }}</x-danger-button>
 
     <x-modal name="confirm-user-deletion" :show="$errors->userDeletion->isNotEmpty()" focusable>
-        <form method="post" action="{{ route('profile.destroy') }}" class="p-6">
+        <form method="post" action="{{ route('profile.destroy') }}" class="p-6 z-50">
             @csrf
             @method('delete')
 
@@ -34,7 +34,7 @@
                     id="password"
                     name="password"
                     type="password"
-                    class="mt-1 block w-3/4"
+                    class="mt-1 block w-3/4 p-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                     placeholder="{{ __('Mot de passe') }}"
                 />
 
